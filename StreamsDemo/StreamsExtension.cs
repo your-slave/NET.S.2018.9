@@ -218,13 +218,31 @@ namespace StreamsDemo
 
         public static int BufferedCopy(string sourcePath, string destinationPath)
         {
+            int count = 0;
+
+            byte[] buffer;
+
+            int result;
+
             using (FileStream fileStream = File.OpenRead(sourcePath))
-            using (BufferedStream bufferedStream = new BufferedStream(fileStream, 20000))
+            using (BufferedStream bufferedStream = new BufferedStream(fileStream, (int)fileStream.Length))
             {
-                bufferedStream.ReadByte();
-                Console.WriteLine(fileStream.Position);
-                // 20000
+                result = (int)fileStream.Length;
+                buffer = new byte[(int)fileStream.Length];
+                do
+                {
+                    count = bufferedStream.Read(buffer, count, (int)fileStream.Length);
+                }
+                while (count > 0);
             }
+
+            using (FileStream fileStream = File.OpenWrite(destinationPath))
+            using (BufferedStream bufferedStream = new BufferedStream(fileStream, (int)fileStream.Length))
+            {
+                bufferedStream.Write(buffer, count, (int)fileStream.Length);
+            }
+
+            return result;
         }
 
         #endregion
@@ -245,7 +263,7 @@ namespace StreamsDemo
                 }
             }
 
-            using (FileStream fileStrean = File.Create("test.txt"))
+            using (FileStream fileStrean = File.Create(sourcePath))
             using (TextWriter textWriter = new StreamWriter(fileStrean))
             {
                 foreach(string element in data)
