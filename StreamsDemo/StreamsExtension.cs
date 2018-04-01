@@ -79,17 +79,22 @@ namespace StreamsDemo
             {
                 //step 3
 
-                memoryStream.Write(streamReaderByteArr, 0, streamReaderByteArr.Length);
+                //memoryStream.Write(streamReaderByteArr, 0, streamReaderByteArr.Length);
+
+                int count = 0;
+                while (count < streamReaderByteArr.Length)
+                {
+                    memoryStream.WriteByte(streamReaderByteArr[count++]);
+                }
 
                 //step 4
 
-                int count;
-
-                do
+                count = 0;
+                while (count < memoryStream.Length)
                 {
-                    count = memoryStream.Read(memoryStreamByteArr, 0, streamReaderByteArr.Length);
+                    memoryStreamByteArr[count++] =
+                        Convert.ToByte(memoryStream.ReadByte());
                 }
-                while (count > 0);
 
             }
 
@@ -303,7 +308,7 @@ namespace StreamsDemo
 
         private static void InputValidation(string sourcePath, string destinationPath)
         {
-            if (!Directory.Exists(sourcePath))
+            if (!File.Exists(sourcePath))
             {
                 throw new ArgumentException("Invalid source path is entered");
             }
